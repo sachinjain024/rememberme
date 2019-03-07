@@ -1,0 +1,29 @@
+.header{
+    display: flex;
+    justify-content: space-between;
+    margin-top: 1.4rem;
+    margin-bottom: 1.4rem;
+}
+
+.name{
+    font-size: 3.2rem;
+    font-weight: 500;
+    color: #001f3f;
+    font-family: 'Pacifico', cursive;
+    margin-left: auto;
+    margin-right: auto;
+    text-decoration: #d33939 underline dotted; 
+}
+
+button i{
+    padding-right: 4px;
+}
+
+.md-form{
+    margin: 22px 0;
+}
+
+form h5{
+    font-size: 2rem;
+    font-weight: 500;
+}

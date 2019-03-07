@@ -1,0 +1,12 @@
+{
+    "manifest_version": 2,
+    "name": "Remember Me",
+    "description": "We will remember for You",
+    "version": "1.0.0",
+    "icons": {"128": "notepad-plus-128.png"},
+    "browser_action": {
+        "default_action": "notepad-plus-19.png",
+        "default_popup": "popup.html"
+    },
+    "permissions": ["activeTab", "storage"]
+}
