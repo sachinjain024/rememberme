@@ -20,7 +20,7 @@ var itemController = (function(){
 
     return {
         addItem: function(typ, tit, des){
-            var newItem, id, newItem2, id2;
+            var newItem, id;
 
             if(data.allNotes['one'].length > 0){
                 id = data.allNotes['one'][data.allNotes['one'].length - 1].id + 1;
@@ -38,15 +38,26 @@ var itemController = (function(){
                 newItem = new Note(id, tit, des);
                 data.allNotes['one'].push(newItem);
             }else if(typ === 'all'){
-
-                newItem = new Note(id, tit, des);
-                newItem2 = new Note(id2, tit, des);
-
-                data.allNotes['one'].push(newItem); 
-                data.allNotes['all'].push(newItem2);
+                newItem = new Note(id, tit, des); 
+                data.allNotes['all'].push(newItem);
             }
+            console.log(data.allNotes);
 
             return newItem;
+        },
+
+        deleteItem: function(typ, id){
+            var ids, index;
+
+            ids = data.allNotes[typ].map(function(current){
+                return current.id;
+            });
+
+            index = ids.indexOf(id);
+
+            if(index !== -1){
+                data.allNotes[typ].splice(index, 1);
+            }
         }
     }
 
@@ -74,18 +85,25 @@ var uiController = (function(){
         domString : function(){
             return domString;
         },
-        addListItem: function(obj){
+        addListItem: function(obj, typ){
             var html, newHtml;
 
-            html = '<div class="item clearfix" id="item-%id%"><div class="item__title">%title%</div><div class="right clearfix"><div class="item__description">%description%</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>'   
+            html = '<div class="item clearfix" id="%type%-%id%"><div class="item__title">%title%</div><div class="right clearfix"><div class="item__description">%description%</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>'   
             
             newHtml = html.replace('%id%', obj.id);
+            newHtml = newHtml.replace('%type%', typ);
             newHtml = newHtml.replace('%title%', obj.title);
             newHtml = newHtml.replace('%description%', obj.description);
 
             document.querySelector(domString.noteList).insertAdjacentHTML('beforeend', newHtml);
 
         },
+
+        deleteListItem: function(selectorId){
+            console.log(selectorId);
+            document.getElementById(selectorId).parentNode.removeChild(document.getElementById(selectorId));
+        },
+
         clearFields: function(){
             var fields, fieldsArr;
 
@@ -109,6 +127,7 @@ var mainController = (function(itemCtrl, uiCtrl){
 
     var setupEventListeners = function(){
         var domString = uiCtrl.domString();
+        
         document.querySelector(domString.inputButton).addEventListener('click', ctrlAddItem);
 
         document.addEventListener('keypress', function(event){
@@ -117,20 +136,36 @@ var mainController = (function(itemCtrl, uiCtrl){
             }
         });
 
-        document.querySelector(domString.).addEventListener('click', ctrlAddItem);
+        document.querySelector(domString.noteList).addEventListener('click', ctrlDeleteItem);
     }
     
 
     var ctrlAddItem = function() {
         var input, newItem;
+        if(uiCtrl.getInput().title !== '' && uiCtrl.getInput().description !== ''){
+            input = uiCtrl.getInput();
 
-        input = uiCtrl.getInput();
+            newItem = itemController.addItem(input.type, input.title, input.description);
 
-        newItem = itemController.addItem(input.type, input.title, input.description);
+            uiCtrl.addListItem(newItem, input.type);
 
-        uiCtrl.addListItem(newItem);
+            uiCtrl.clearFields();
+        }
+    }
 
-        uiCtrl.clearFields();
+    var ctrlDeleteItem = function(event){
+        var itemId, splitId;
+
+        itemId = event.target.parentNode.parentNode.parentNode.parentNode.id;
+
+        if(itemId){
+            splitId = parseInt(itemId.split('-')[1]);
+            type = itemId.split('-')[0];
+
+            itemCtrl.deleteItem(type, splitId);
+        }
+
+        uiCtrl.deleteListItem(itemId);
     }
 
     return {
